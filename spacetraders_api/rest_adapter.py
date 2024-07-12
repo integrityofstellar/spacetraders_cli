@@ -127,6 +127,17 @@ class RestAdapter:
             is_private=is_private,
         )
 
+    def patch(
+        self, endpoint: str, ep_params: Dict = None, data: Dict = None, is_private=True
+    ) -> Result:
+        return self._do(
+            http_method="PATCH",
+            endpoint=endpoint,
+            ep_params=ep_params,
+            data=data,
+            is_private=is_private,
+        )
+
     def fetch_data(self, url: str) -> bytes:
         # GET URL; catching, logging, and re-raising any exceptions
         http_method = "GET"

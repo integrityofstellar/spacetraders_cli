@@ -85,8 +85,95 @@ class SpaceTradersApi:
 
         return _result
 
-    def accept_contract(self, contract_id: str) -> Contract:
+    def accept_contract(self, contract_id: str) -> AcceptContractResult:
         result = self._rest_adapter.post(endpoint=f"/my/contracts/{contract_id}/accept")
 
         # TODO: Workaround for the accepted contract model
-        return result.data
+        return AcceptContractResult(
+            contract=Contract(**result.data["data"]["contract"]),
+            agent=Agent(**result.data["data"]["agent"]),
+        )
+
+    def find_shipyard(
+        self, system_symbol: str, limit: int = 20, page: int = 1
+    ) -> SearchResultPaginated:
+        result = self._rest_adapter.get(
+            endpoint=f"/systems/{system_symbol}/waypoints",
+            ep_params={"traits": "SHIPYARD", "limit": limit},
+        )
+
+        _result = SearchResultPaginated(
+            data=[SystemWaypoint(**waypoint) for waypoint in result.data["data"]],
+            meta=MetaPagnaition(**result.data["meta"]),
+        )
+
+        return _result
+
+    def get_available_ships_at_shipyard(
+        self, system_symbol: str, shipyard_symbol: str
+    ) -> ShipyardShip:
+        # TODO: For some reason the endpoint is not working as expected and returning only 1 ship, not even in a list.
+        result = self._rest_adapter.get(
+            endpoint=f"/systems/{system_symbol}/waypoints/{shipyard_symbol}/shipyard",
+        )
+        return ShipyardShip(**result.data["data"])
+
+    def buy_ship(self, ship_type: str, waypoint_symbol: str):
+        result = self._rest_adapter.post(
+            endpoint="/my/ships",
+            data={"shipType": ship_type, "waypointSymbol": waypoint_symbol},
+        )
+
+        return result.data["data"]
+
+    # 'https://api.spacetraders.io/v2/systems/:systemSymbol/waypoints/:waypointSymbol'
+    def get_starting_waypoint(self, system_symbol: str, waypoint_symbol: str):
+        result = self._rest_adapter.get(
+            endpoint=f"/systems/{system_symbol}/waypoints/{waypoint_symbol}"
+        )
+
+        return result.data["data"]
+
+    def get_my_ships(self) -> SearchResultPaginated:
+        result = self._rest_adapter.get(endpoint="/my/ships")
+
+        _result = SearchResultPaginated(
+            data=[Ship(**ship) for ship in result.data["data"]],
+            meta=MetaPagnaition(**result.data["meta"]),
+        )
+
+        return _result
+
+    def navigate_ship_to(
+        self, ship_symbol: str, waypoint_symbol: str
+    ) -> ShipNavigationResponse:
+        result = self._rest_adapter.post(
+            endpoint=f"/my/ships/{ship_symbol}/navigate",
+            data={"waypointSymbol": waypoint_symbol},
+        )
+
+        return ShipNavigationResponse(**result.data["data"])
+
+    def set_ship_flight_mode(
+        self, ship_symbol: str, flight_mode: str
+    ) -> ChangeShipFlightModeResponse:
+        result = self._rest_adapter.patch(
+            endpoint=f"/my/ships/{ship_symbol}/nav",
+            data={"flightMode": flight_mode},
+        )
+
+        return ChangeShipFlightModeResponse(**result.data["data"])
+
+    def orbit_ship(self, ship_symbol: str) -> ChangeShipStatusResponse:
+        result = self._rest_adapter.post(
+            endpoint=f"/my/ships/{ship_symbol}/orbit",
+        )
+
+        return ChangeShipStatusResponse(**result.data["data"])
+
+    def dock_ship(self, ship_symbol: str) -> ChangeShipStatusResponse:
+        result = self._rest_adapter.post(
+            endpoint=f"/my/ships/{ship_symbol}/dock",
+        )
+
+        return ChangeShipStatusResponse(**result.data["data"])

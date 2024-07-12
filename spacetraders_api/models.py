@@ -198,7 +198,7 @@ class ShipFrame(BaseModel):
     moduleSlots: int
     mountingPoints: int
     fuelCapacity: int
-    condition: int
+    condition: float
     integrity: int
     requirements: PowerAndCrewRequirements
 
@@ -283,3 +283,48 @@ class RegistrationResult(BaseModel):
     contract: Contract
     faction: Faction
     ship: Ship
+
+
+class ShipTypeReference(BaseModel):
+    type: str
+
+
+class ShipyardShip(BaseModel):
+    symbol: str
+    shipTypes: list[ShipTypeReference]
+    modificationsFee: int
+
+
+class AcceptContractResult(BaseModel):
+    contract: Contract
+    agent: Agent
+
+
+class ChangeShipStatusResponse(BaseModel):
+    systemSymbol: str
+    waypointSymbol: str
+    route: ShipRoute
+    status: str
+    flightMode: str
+
+
+class ChangeShipFlightModeResponse(BaseModel):
+    systemSymbol: str
+    waypointSymbol: str
+    route: ShipRoute
+    status: str
+    flightMode: str
+
+
+class Event(BaseModel):
+    type: str
+    symbol: str
+    component: str
+    name: str
+    description: str
+
+
+class ShipNavigationResponse(BaseModel):
+    nav: ShipNav
+    fuel: ShipFuel
+    events: List[Event]
