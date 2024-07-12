@@ -104,10 +104,22 @@ class Faction(BaseModel):
     isRecruiting: bool
 
 
+class TermPayment(BaseModel):
+    onAccepted: int
+    onFulfilled: int
+
+
+class DeliverTermObject(BaseModel):
+    tradeSymbol: str
+    destinationSymbol: str
+    unitsRequired: int
+    unitsFulfilled: int
+
+
 class Term(BaseModel):
     deadline: str
-    payment: dict
-    deliver: list[dict]
+    payment: TermPayment
+    deliver: list[DeliverTermObject]
 
 
 class Contract(BaseModel):
