@@ -87,7 +87,7 @@ class SystemWaypoint(BaseModel):
 
 
 class Agent(BaseModel):
-    accountId: str
+    accountId: Optional[str] = None
     symbol: str
     headquarters: str
     credits: int
@@ -328,3 +328,8 @@ class ShipNavigationResponse(BaseModel):
     nav: ShipNav
     fuel: ShipFuel
     events: List[Event]
+
+
+class DeliverCargoToContractResponse(BaseModel):
+    contract: Contract
+    cargo: ShipCargo

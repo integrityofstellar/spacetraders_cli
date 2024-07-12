@@ -177,3 +177,51 @@ class SpaceTradersApi:
         )
 
         return ChangeShipStatusResponse(**result.data["data"])
+
+    def get_agents(self, page: int = 1, limit: int = 20) -> SearchResultPaginated:
+        result = self._rest_adapter.get(
+            endpoint="/agents", ep_params={"page": page, "limit": limit}
+        )
+
+        _result = SearchResultPaginated(
+            data=[Agent(**agent) for agent in result.data["data"]],
+            meta=MetaPagnaition(**result.data["meta"]),
+        )
+
+        return _result
+
+    def get_public_agent(self, agent_symbol: str) -> Agent:
+        result = self._rest_adapter.get(endpoint=f"/agents/{agent_symbol}")
+
+        return Agent(**result.data["data"])
+
+    def get_contract(self, contract_id: str) -> Contract:
+        result = self._rest_adapter.get(endpoint=f"/my/contracts/{contract_id}")
+
+        return Contract(**result.data["data"])
+
+    def deliver_contract(
+        self, contract_id: str, ship_symbol: str, trade_symbol: str, units: int
+    ) -> DeliverCargoToContractResponse:
+        result = self._rest_adapter.post(
+            endpoint=f"/my/contracts/{contract_id}/deliver",
+            data={
+                "shipSymbol": ship_symbol,
+                "tradeSymbol": trade_symbol,
+                "units": units,
+            },
+        )
+
+        return DeliverCargoToContractResponse(**result.data["data"])
+
+    def fulfill_contract(self, contract_id: str) -> AcceptContractResult:
+        result = self._rest_adapter.post(
+            endpoint=f"/my/contracts/{contract_id}/fulfill",
+        )
+
+        return AcceptContractResult(**result.data["data"])
+
+    def get_faction(self, faction_symbol: str) -> Faction:
+        result = self._rest_adapter.get(endpoint=f"/factions/{faction_symbol}")
+
+        return Faction(**result.data["data"])
