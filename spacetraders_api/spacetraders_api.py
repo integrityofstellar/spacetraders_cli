@@ -84,3 +84,9 @@ class SpaceTradersApi:
         )
 
         return _result
+
+    def accept_contract(self, contract_id: str) -> Contract:
+        result = self._rest_adapter.post(endpoint=f"/my/contracts/{contract_id}/accept")
+
+        # TODO: Workaround for the accepted contract model
+        return result.data
