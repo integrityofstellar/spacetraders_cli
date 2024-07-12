@@ -1,0 +1,2 @@
+class SpaceTradersApiException(Exception):
+    pass
